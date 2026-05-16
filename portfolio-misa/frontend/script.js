@@ -1,116 +1,277 @@
-// ===== CONFIGURAÇÃO =====
-const API_URL = 'https://misa-backend.onrender.com'; // Será sua URL do Render
+// ===== PORTFÓLIO DO MISA - SCRIPT PRINCIPAL =====
 
-// ===== MODAL DE ORÇAMENTO =====
-const modal = document.getElementById('modalOrcamento');
-const btnOrcamento = document.getElementById('btn-abrir-orcamento');
-const spanFechar = document.querySelector('.fechar-modal');
+// Aguarda o DOM carregar
+document.addEventListener('DOMContentLoaded', () => {
+    initMobileMenu();
+    initPortfolio();
+    initGame();
+    initContactForm();
+    initSmoothScroll();
+});
 
-if (btnOrcamento) {
-    btnOrcamento.addEventListener('click', () => {
-        modal.style.display = 'block';
+// ===== MENU MOBILE =====
+function initMobileMenu() {
+    const btnMobile = document.getElementById('btn-mobile');
+    const menuMobile = document.getElementById('menu-mobile');
+    const overlayMenu = document.getElementById('overlay-menu');
+    
+    if (!btnMobile || !menuMobile || !overlayMenu) return;
+    
+    function toggleMenu() {
+        menuMobile.classList.toggle('abrir');
+        overlayMenu.classList.toggle('ativo');
+    }
+    
+    btnMobile.addEventListener('click', toggleMenu);
+    overlayMenu.addEventListener('click', toggleMenu);
+    
+    // Fecha ao clicar em um link
+    document.querySelectorAll('.menu-mobile a').forEach(link => {
+        link.addEventListener('click', toggleMenu);
     });
 }
 
-if (spanFechar) {
-    spanFechar.addEventListener('click', () => {
-        modal.style.display = 'none';
-    });
-}
-
-window.addEventListener('click', (event) => {
-    if (event.target === modal) {
-        modal.style.display = 'none';
-    }
-});
-
-// Cálculo de orçamento via API
-document.getElementById('btnCalcular')?.addEventListener('click', async () => {
-    const tipo = document.getElementById('tipoServico').value;
-    const complexidade = document.getElementById('complexidade').value;
+// ===== PORTFÓLIO (carrega projetos do backend ou local) =====
+async function initPortfolio() {
+    const grid = document.getElementById('portfolio-grid');
+    if (!grid) return;
     
-    const resultadoDiv = document.getElementById('resultadoOrcamento');
-    resultadoDiv.innerHTML = '⏳ Calculando...';
+    // Projetos locais (fallback)
+    const projetos = [
+        {
+            titulo: "🌙 Cotton Candy Kabukicho",
+            imagem: "assets/images/banner.png",
+            link: "https://misaandrejezieski.github.io/Cotton-Candy-Kabukicho/"
+        },
+        {
+            titulo: "📥 BaixarYou Downloader",
+            imagem: "assets/images/baixaryou-banner.jpg",
+            link: "https://MisaAndrejezieski.github.io/Site-BaixarYou"
+        },
+        {
+            titulo: "🍜 NEKOLAMEN Yakisoba",
+            imagem: "assets/images/Yakisoba, japanese Street Food!!!.jpg",
+            link: "https://misaandrejezieski.github.io/NekoLamen/"
+        }
+    ];
     
+    // Tenta buscar do backend (se estiver rodando)
     try {
-        const response = await axios.post(`${API_URL}/api/orcamento`, {
-            tipo_servico: tipo,
-            complexidade: complexidade
-        });
-        
-        const dados = response.data;
-        resultadoDiv.innerHTML = `
-            <strong>💰 Valor estimado:</strong> ${dados.valor_estimado}<br>
-            <strong>⏱️ Prazo médio:</strong> ${dados.prazo_dias} dias úteis<br>
-            <small>⚠️ Valor sujeito a ajustes após análise detalhada.</small>
-            <button id="btnSolicitarOrcamento" class="btn-cta">📞 Quero este orçamento</button>
-        `;
-        
-        document.getElementById('btnSolicitarOrcamento')?.addEventListener('click', () => {
-            window.location.href = '#contato';
-            modal.style.display = 'none';
-        });
-    } catch (error) {
-        resultadoDiv.innerHTML = '❌ Erro ao calcular. Tente novamente ou me chame no WhatsApp.';
-        console.error(error);
-    }
-});
-
-// ===== FORMULÁRIO DE CONTATO COM API =====
-document.querySelector('form')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const form = e.target;
-    const dados = {
-        nome: form.querySelector('input[placeholder*="nome"]')?.value || '',
-        email: form.querySelector('input[type="email"]')?.value || '',
-        telefone: form.querySelector('input[type="tel"]')?.value || '',
-        mensagem: form.querySelector('textarea')?.value || '',
-        origem: 'site_misa_portfolio',
-        data_envio: new Date().toISOString()
-    };
-    
-    const btnEnviar = form.querySelector('.btn-enviar input');
-    const textoOriginal = btnEnviar.value;
-    btnEnviar.value = '⏳ Enviando...';
-    btnEnviar.disabled = true;
-    
-    try {
-        const response = await axios.post(`${API_URL}/api/contato`, dados);
-        alert(response.data.mensagem || '✅ Mensagem enviada! Responderei em até 24h.');
-        form.reset();
-    } catch (error) {
-        console.error('Erro detalhado:', error);
-        alert('❌ Falha no envio. Por favor, me chame no WhatsApp: (XX) XXXXX-XXXX');
-    } finally {
-        btnEnviar.value = textoOriginal;
-        btnEnviar.disabled = false;
-    }
-});
-
-// ===== CARREGAR PROJETOS DO BACK-END (para não ficar fixo) =====
-async function carregarProjetos() {
-    try {
-        const response = await axios.get(`${API_URL}/api/projetos`);
-        const projetos = response.data;
-        
-        const container = document.querySelector('.portfolio .flex');
-        if (container && projetos.length) {
-            container.innerHTML = ''; // Limpa os fixos
-            projetos.forEach(proj => {
-                const div = document.createElement('div');
-                div.className = 'img-port';
-                div.style.backgroundImage = `url('${proj.imagem}')`;
-                div.style.cursor = 'pointer';
-                div.onclick = () => window.location.href = proj.link;
-                div.innerHTML = `<div class="overlay">${proj.titulo}</div>`;
-                container.appendChild(div);
-            });
+        const response = await fetch('http://localhost:3000/api/projetos');
+        if (response.ok) {
+            const data = await response.json();
+            if (data.length) {
+                renderizarProjetos(data);
+                return;
+            }
         }
     } catch (error) {
-        console.log('Usando projetos estáticos (back-end indisponível)');
+        console.log('Backend offline, usando projetos locais');
+    }
+    
+    renderizarProjetos(projetos);
+}
+
+function renderizarProjetos(projetos) {
+    const grid = document.getElementById('portfolio-grid');
+    if (!grid) return;
+    
+    grid.innerHTML = projetos.map(proj => `
+        <div class="portfolio-item" onclick="window.open('${proj.link}', '_blank')">
+            <img src="${proj.imagem}" alt="${proj.titulo}">
+            <div class="portfolio-overlay">
+                <h3>${proj.titulo}</h3>
+                <p>Clique para visitar →</p>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ===== JOGO PHASER =====
+let game = null;
+let currentScore = 0;
+
+function initGame() {
+    const gameContainer = document.getElementById('game-container');
+    if (!gameContainer) return;
+    
+    // Configuração do jogo
+    const config = {
+        type: Phaser.AUTO,
+        width: 800,
+        height: 500,
+        parent: 'game-container',
+        backgroundColor: '#0a0a2a',
+        scene: {
+            preload: preload,
+            create: create,
+            update: update
+        }
+    };
+    
+    function preload() {
+        // Criar gráficos proceduralmente
+        const graphics = this.make.graphics({ add: false });
+        
+        // Player (xícara de café)
+        graphics.fillStyle(0x00ff08);
+        graphics.fillCircle(20, 20, 18);
+        graphics.generateTexture('player', 40, 40);
+        
+        // Bug (inimigo)
+        graphics.clear();
+        graphics.fillStyle(0xff4444);
+        graphics.fillCircle(20, 20, 15);
+        graphics.generateTexture('bug', 40, 40);
+    }
+    
+    function create() {
+        // Placar
+        this.score = 0;
+        this.scoreText = this.add.text(20, 20, 'Bugs exterminados: 0', {
+            fontSize: '20px',
+            color: '#00ff08',
+            fontFamily: 'monospace'
+        });
+        
+        // Jogador
+        this.player = this.add.sprite(400, 450, 'player');
+        this.player.setInteractive();
+        
+        // Bugs
+        this.bugs = [];
+        
+        // Spawn de bugs a cada 1 segundo
+        this.time.addEvent({
+            delay: 1000,
+            callback: spawnBug,
+            callbackScope: this,
+            loop: true
+        });
+        
+        // Movimento do mouse
+        this.input.on('pointermove', (pointer) => {
+            this.player.x = Phaser.Math.Clamp(pointer.x, 30, 770);
+        });
+        
+        function spawnBug() {
+            const x = Phaser.Math.Between(40, 760);
+            const y = Phaser.Math.Between(40, 350);
+            const bug = this.add.sprite(x, y, 'bug');
+            bug.setInteractive();
+            
+            bug.on('pointerdown', () => {
+                bug.destroy();
+                this.score += 10;
+                this.scoreText.setText(`Bugs exterminados: ${this.score}`);
+                currentScore = this.score;
+                document.getElementById('game-score').innerText = this.score;
+                
+                // Efeito de shake no player
+                this.tweens.add({
+                    targets: this.player,
+                    scale: 1.3,
+                    duration: 100,
+                    yoyo: true
+                });
+            });
+            
+            // Movimento aleatório
+            this.tweens.add({
+                targets: bug,
+                x: Phaser.Math.Between(40, 760),
+                y: Phaser.Math.Between(40, 350),
+                duration: 2000,
+                repeat: -1,
+                yoyo: true
+            });
+            
+            this.bugs.push(bug);
+        }
+    }
+    
+    function update() {
+        // Lógica adicional se necessário
+    }
+    
+    game = new Phaser.Game(config);
+    
+    // Botão de reset
+    const resetBtn = document.getElementById('reset-game');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            if (game) {
+                game.destroy(true);
+                currentScore = 0;
+                document.getElementById('game-score').innerText = '0';
+                initGame();
+            }
+        });
     }
 }
 
-// Executa ao carregar a página
-carregarProjetos();
+// ===== FORMULÁRIO DE CONTATO =====
+function initContactForm() {
+    const form = document.getElementById('contact-form');
+    if (!form) return;
+    
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+        
+        const messageDiv = document.getElementById('form-message');
+        const submitBtn = form.querySelector('.btn-submit');
+        
+        // Desabilita botão durante envio
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Enviando...';
+        
+        try {
+            // Tenta enviar para o backend (se estiver rodando)
+            const response = await fetch('http://localhost:3000/api/contato', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                messageDiv.innerHTML = '✅ Mensagem enviada! Responderei em até 24h. ☕';
+                messageDiv.className = 'form-message success';
+                form.reset();
+            } else {
+                throw new Error('Erro no servidor');
+            }
+        } catch (error) {
+            // Fallback: mostra mensagem para contato direto
+            messageDiv.innerHTML = '⚠️ Servidor offline. Me chame no WhatsApp: (XX) XXXXX-XXXX ou email: misaelandrejezieski130982@outlook.com.br';
+            messageDiv.className = 'form-message error';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="bi bi-send"></i> Enviar mensagem 🚀';
+            
+            // Esconde mensagem após 5 segundos
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+                messageDiv.className = 'form-message';
+            }, 5000);
+        }
+    });
+}
+
+// ===== SCROLL SUAVE =====
+function initSmoothScroll() {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            if (href === '#' || href === '') return;
+            
+            const target = document.querySelector(href);
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+}
