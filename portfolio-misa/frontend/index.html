@@ -1,0 +1,23 @@
+<!-- Antes do fechamento </body>, adicione: -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="script.js"></script>
+
+<!-- Modal de orçamento rápido (novo) -->
+<div id="modalOrcamento" class="modal">
+    <div class="modal-content">
+        <span class="fechar-modal">&times;</span>
+        <h3>📊 Simule seu orçamento</h3>
+        <select id="tipoServico">
+            <option value="site">🌐 Site institucional</option>
+            <option value="dashboard">📊 Dashboard/Power BI</option>
+            <option value="automacao">🤖 Automação com Python</option>
+        </select>
+        <select id="complexidade">
+            <option value="baixa">✅ Simples (até 3 páginas/dashboards)</option>
+            <option value="media">⚙️ Médio (até 7 telas/relatórios)</option>
+            <option value="alta">🚀 Complexo (sistema completo)</option>
+        </select>
+        <button id="btnCalcular">Calcular estimativa</button>
+        <div id="resultadoOrcamento" class="resultado"></div>
+    </div>
+</div>
