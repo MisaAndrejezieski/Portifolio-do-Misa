@@ -1,23 +1,223 @@
-<!-- Antes do fechamento </body>, adicione: -->
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="script.js"></script>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="description" content="Portfólio de Misa - Programador Full Stack que transforma café em código e bugs em soluções.">
+    <meta name="author" content="Misael Andrejezieski">
+    <title>Misa | Café & Código ☕</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Parisienne&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Phaser (framework de games) -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    
+    <!-- Seus estilos -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-<!-- Modal de orçamento rápido (novo) -->
-<div id="modalOrcamento" class="modal">
-    <div class="modal-content">
-        <span class="fechar-modal">&times;</span>
-        <h3>📊 Simule seu orçamento</h3>
-        <select id="tipoServico">
-            <option value="site">🌐 Site institucional</option>
-            <option value="dashboard">📊 Dashboard/Power BI</option>
-            <option value="automacao">🤖 Automação com Python</option>
-        </select>
-        <select id="complexidade">
-            <option value="baixa">✅ Simples (até 3 páginas/dashboards)</option>
-            <option value="media">⚙️ Médio (até 7 telas/relatórios)</option>
-            <option value="alta">🚀 Complexo (sistema completo)</option>
-        </select>
-        <button id="btnCalcular">Calcular estimativa</button>
-        <div id="resultadoOrcamento" class="resultado"></div>
-    </div>
-</div>
+    <!-- HEADER / NAVEGAÇÃO -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="#home">
+                    <img src="assets/images/logo-001.png" alt="Misa Logo">
+                    <span class="logo-text">Misa<span class="dot">.</span></span>
+                </a>
+            </div>
+            
+            <nav class="nav-desktop">
+                <ul>
+                    <li><a href="#home" class="nav-link">🏠 Início</a></li>
+                    <li><a href="#especialidades" class="nav-link">⚙️ Especialidades</a></li>
+                    <li><a href="#sobre" class="nav-link">😎 Sobre</a></li>
+                    <li><a href="#portfolio" class="nav-link">📁 Portfólio</a></li>
+                    <li><a href="#jogo" class="nav-link">🎮 Game</a></li>
+                    <li><a href="#contato" class="nav-link">📞 Contato</a></li>
+                </ul>
+            </nav>
+            
+            <div class="btn-mobile" id="btn-mobile">
+                <i class="bi bi-list"></i>
+            </div>
+        </div>
+        
+        <!-- Menu mobile -->
+        <div class="menu-mobile" id="menu-mobile">
+            <div class="btn-fechar">
+                <i class="bi bi-x-lg"></i>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#home">Início</a></li>
+                    <li><a href="#especialidades">Especialidades</a></li>
+                    <li><a href="#sobre">Sobre</a></li>
+                    <li><a href="#portfolio">Portfólio</a></li>
+                    <li><a href="#jogo">Jogo</a></li>
+                    <li><a href="#contato">Contato</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="overlay-menu" id="overlay-menu"></div>
+    </header>
+
+    <main>
+        <!-- HERO SECTION -->
+        <section id="home" class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        Transformo <span class="highlight">café em código</span> 
+                        <span class="emoji">☕ → 💻</span>
+                    </h1>
+                    <p class="hero-description">
+                        Programador full stack com 18 anos de indústria nas veias. 
+                        Faço sistemas que resolvem problemas reais, com bom humor e código limpo.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="#contato" class="btn btn-primary">
+                            <i class="bi bi-chat-dots"></i> Vamos conversar
+                        </a>
+                        <a href="#portfolio" class="btn btn-secondary">
+                            <i class="bi bi-folder2-open"></i> Ver portfólio
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="assets/images/jf001.jpg" alt="Misa programando" class="floating">
+                </div>
+            </div>
+        </section>
+
+        <!-- ESPECIALIDADES -->
+        <section id="especialidades" class="especialidades">
+            <div class="container">
+                <h2 class="section-title">MINHAS <span class="highlight">ESPECIALIDADES</span></h2>
+                <div class="cards-grid">
+                    <div class="card">
+                        <i class="bi bi-code-square"></i>
+                        <h3>Websites</h3>
+                        <p>Sites responsivos, rápidos e com design que conversa com seu público.</p>
+                    </div>
+                    <div class="card">
+                        <i class="bi bi-graph-up"></i>
+                        <h3>Dashboards & Dados</h3>
+                        <p>Power BI, Python, SQL. Transformo dados bagunçados em decisões.</p>
+                    </div>
+                    <div class="card">
+                        <i class="bi bi-robot"></i>
+                        <h3>Automações</h3>
+                        <p>Processos repetitivos? Eu automatizo com Python e Node.js.</p>
+                    </div>
+                    <div class="card">
+                        <i class="bi bi-controller"></i>
+                        <h3>Jogos & Interatividade</h3>
+                        <p>Engaje seus clientes com games feitos sob medida.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SOBRE -->
+        <section id="sobre" class="sobre">
+            <div class="container">
+                <div class="sobre-grid">
+                    <div class="sobre-image">
+                        <img src="assets/images/me.jpg" alt="Misael Andrejezieski">
+                    </div>
+                    <div class="sobre-text">
+                        <h2>PRAZER, <span class="highlight">SOU O MISA.</span></h2>
+                        <p>👨‍💻 Programador, viciado em café e especialista em transformar "não consigo" em "olha só que legal".</p>
+                        <p>🏭 Passei 18 anos na <strong>Lactalis</strong> como operador de máquinas e suporte à gestão. Hoje, uno essa vivência industrial com tecnologia para criar soluções que realmente funcionam no chão de fábrica.</p>
+                        <p>🐛 Minha relação com bugs é igual àquele parente chato: sempre aparece na hora errada, mas a gente dá um jeito.</p>
+                        <div class="social-links">
+                            <a href="https://www.instagram.com/misaelandrejezieski/" target="_blank"><i class="bi bi-instagram"></i></a>
+                            <a href="https://www.facebook.com/profile.php?id=100034358779961" target="_blank"><i class="bi bi-facebook"></i></a>
+                            <a href="https://github.com/MisaAndrejezieski" target="_blank"><i class="bi bi-github"></i></a>
+                            <a href="https://www.linkedin.com/in/misael-andrejezieski-2872a734/" target="_blank"><i class="bi bi-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PORTFÓLIO -->
+        <section id="portfolio" class="portfolio">
+            <div class="container">
+                <h2 class="section-title">MEU <span class="highlight">PORTFÓLIO</span></h2>
+                <div class="portfolio-grid" id="portfolio-grid">
+                    <!-- Projetos serão carregados via JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- JOGO (PHASER) -->
+        <section id="jogo" class="game-section">
+            <div class="container">
+                <h2 class="section-title">🎮 <span class="highlight">Pausa para o café</span> ☕</h2>
+                <p class="game-subtitle">Enquanto não decidimos seu projeto, que tal matar uns bugs?</p>
+                <div id="game-container" class="game-container"></div>
+                <div class="game-info">
+                    <div class="score-box">
+                        <span>🏆 Pontuação</span>
+                        <strong id="game-score">0</strong>
+                    </div>
+                    <button id="reset-game" class="btn-game">🔄 Novo jogo</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTATO -->
+        <section id="contato" class="contato">
+            <div class="container">
+                <h2 class="section-title">FALA <span class="highlight">COMIGO</span></h2>
+                <form id="contact-form" class="contact-form">
+                    <input type="text" name="nome" placeholder="Seu nome (pode ser apelido)" required>
+                    <input type="email" name="email" placeholder="Seu melhor e-mail" required>
+                    <input type="tel" name="telefone" placeholder="WhatsApp com DDD">
+                    <textarea name="mensagem" rows="5" placeholder="Me conta sua ideia... (ou uma piada, também aceito 😄)" required></textarea>
+                    <button type="submit" class="btn-submit">
+                        <i class="bi bi-send"></i> Enviar mensagem 🚀
+                    </button>
+                    <div id="form-message" class="form-message"></div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="assets/images/logo-001.png" alt="Misa">
+                    <p>Café, código e bom humor desde 1982</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#home">Início</a>
+                    <a href="#especialidades">Especialidades</a>
+                    <a href="#sobre">Sobre</a>
+                    <a href="#contato">Contato</a>
+                </div>
+                <div class="footer-social">
+                    <a href="https://github.com/MisaAndrejezieski"><i class="bi bi-github"></i></a>
+                    <a href="https://www.linkedin.com/in/misael-andrejezieski-2872a734/"><i class="bi bi-linkedin"></i></a>
+                    <a href="mailto:misaelandrejezieski130982@outlook.com.br"><i class="bi bi-envelope"></i></a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>💚 Misa — transformando café em código desde 1982</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Seus scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
